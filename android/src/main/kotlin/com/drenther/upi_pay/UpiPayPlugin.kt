@@ -111,7 +111,11 @@ class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
         val packageName = it.activityInfo.packageName
         val drawable = packageManager?.getApplicationIcon(packageName)
 
-        val bitmap = (drawable != null)?(getBitmapFromDrawable(drawable)):null
+        val bitmap =  if (drawable != null){
+          getBitmapFromDrawable(drawable)
+        }else{
+          null
+        }
         
         val icon = if (bitmap != null) {
           encodeToBase64(bitmap)
