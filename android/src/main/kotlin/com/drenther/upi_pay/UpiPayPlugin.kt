@@ -71,14 +71,21 @@ class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
       uriStr += "&mode=00" // &orgid=000000"
       val uri = Uri.parse(uriStr)
       // Log.d("upi_pay", "initiateTransaction URI: " + uri.toString())
-
+      
       val intent = Intent(Intent.ACTION_VIEW, uri)
       intent.setPackage(app)
-
-      if (intent.resolveActivity(activity?.packageManager) == null) {
+      
+      if(activity != null){
+          if (intent.resolveActivity(activity.packageManager) == null) {
+            this.success("activity_unavailable")
+            return
+        }
+         
+      }else{
         this.success("activity_unavailable")
         return
       }
+      
 
       activity?.startActivityForResult(intent, requestCodeNumber)
     } catch (ex: Exception) {
@@ -97,12 +104,12 @@ class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
     val packageManager = activity?.packageManager
 
     try {
-      val activities = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+      val activities = packageManager?.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
       // Convert the activities into a response that can be transferred over the channel.
       val activityResponse = activities.map {
         val packageName = it.activityInfo.packageName
-        val drawable = packageManager.getApplicationIcon(packageName)
+        val drawable = packageManager?.getApplicationIcon(packageName)
 
         val bitmap = getBitmapFromDrawable(drawable)
         val icon = if (bitmap != null) {
