@@ -107,11 +107,12 @@ class UpiPayPlugin internal constructor(registrar: Registrar, channel: MethodCha
       val activities = packageManager?.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
 
       // Convert the activities into a response that can be transferred over the channel.
-      val activityResponse = activities.map {
+      val activityResponse = activities?.map {
         val packageName = it.activityInfo.packageName
         val drawable = packageManager?.getApplicationIcon(packageName)
 
-        val bitmap = getBitmapFromDrawable(drawable)
+        val bitmap = (drawable != null)?(getBitmapFromDrawable(drawable)):null
+        
         val icon = if (bitmap != null) {
           encodeToBase64(bitmap)
         } else {
